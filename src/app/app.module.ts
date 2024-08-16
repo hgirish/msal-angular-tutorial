@@ -13,7 +13,7 @@ import { MsalGuard, MsalInterceptor, MsalModule, MsalRedirectComponent } from "@
 import { InteractionType, PublicClientApplication } from "@azure/msal-browser";
 import { AppRoutingModule } from "./app-routing.module";
 import { environment } from '../environments/environment';
-import { HTTP_INTERCEPTORS } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient } from "@angular/common/http";
 
 const isIE = 
 window.navigator.userAgent.indexOf("MSIE") > -1 ||
@@ -50,12 +50,13 @@ window.navigator.userAgent.indexOf("Trident") > -1;
         {
             interactionType: InteractionType.Redirect, // MSAL Interceptor Configuration
             protectedResourceMap: new Map([
-                ["Enter_the_Graph_Endpoint_Here/v1.0/me", ["user.read"]],
+                ["https://graph.microsoft.com/v1.0/me", ["user.read"]],
             ]),
         }
       ),
     ],
     providers: [
+        provideHttpClient(),
         {
             provide: HTTP_INTERCEPTORS,
             useClass: MsalInterceptor,

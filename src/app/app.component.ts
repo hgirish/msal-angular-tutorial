@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
-import { InteractionStatus, RedirectRequest } from '@azure/msal-browser';
+import { InteractionStatus, PopupRequest, RedirectRequest } from '@azure/msal-browser';
 import { filter, Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -31,6 +31,7 @@ export class AppComponent {
     })
   }
 
+  /* using route redirect
   login() {
     if  (this.msalGuardConfig.authRequest){
       this.authService.loginRedirect({...this.msalGuardConfig.authRequest} as RedirectRequest);
@@ -44,6 +45,34 @@ export class AppComponent {
     this.authService.logoutRedirect({
       postLogoutRedirectUri: 'http://localhost:4200'
     })
+  }
+  */
+  login() {
+    if (this.msalGuardConfig.authRequest){
+      this.authService.loginPopup({...this.msalGuardConfig.authRequest} as PopupRequest)
+        .subscribe({
+          next: (result) => {
+            console.log(result);
+            this.setLoginDisplay();
+          },
+          error: (error) => console.log(error)
+        });
+    } else {
+      this.authService.loginPopup()
+        .subscribe({
+          next: (result) => {
+            console.log(result);
+            this.setLoginDisplay();
+          },
+          error: (error) => console.log(error)
+        });
+    }
+  }
+
+  logout() { // Add log out function here
+    this.authService.logoutPopup({
+      mainWindowRedirectUri: "/"
+    });
   }
 
   setLoginDisplay() {
