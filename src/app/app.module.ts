@@ -9,10 +9,11 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatListModule } from "@angular/material/list";
 
 
-import { MsalGuard, MsalModule, MsalRedirectComponent } from "@azure/msal-angular";
+import { MsalGuard, MsalInterceptor, MsalModule, MsalRedirectComponent } from "@azure/msal-angular";
 import { InteractionType, PublicClientApplication } from "@azure/msal-browser";
 import { AppRoutingModule } from "./app-routing.module";
 import { environment } from '../environments/environment';
+import { HTTP_INTERCEPTORS } from "@angular/common/http";
 
 const isIE = 
 window.navigator.userAgent.indexOf("MSIE") > -1 ||
@@ -46,10 +47,20 @@ window.navigator.userAgent.indexOf("Trident") > -1;
                 scopes: ["user.read"]
             }
         },
-        null
+        {
+            interactionType: InteractionType.Redirect, // MSAL Interceptor Configuration
+            protectedResourceMap: new Map([
+                ["Enter_the_Graph_Endpoint_Here/v1.0/me", ["user.read"]],
+            ]),
+        }
       ),
     ],
     providers: [
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: MsalInterceptor,
+            multi: true,
+        },
         MsalGuard, // MsalGuard added as provider here
 
     ],
