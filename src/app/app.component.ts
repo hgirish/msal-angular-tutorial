@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
-import { InteractionStatus } from '@azure/msal-browser';
+import { Component, Inject } from '@angular/core';
+import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
+import { InteractionStatus, RedirectRequest } from '@azure/msal-browser';
 import { filter, Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -14,7 +14,8 @@ export class AppComponent {
   loginDisplay=false;
   private readonly _destroying$ = new Subject<void>();
 
-  constructor(private broadcastService: MsalBroadcastService,
+  constructor(@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
+    private broadcastService: MsalBroadcastService,
     private authService: MsalService){}
 
   ngOnInit(){
@@ -31,7 +32,12 @@ export class AppComponent {
   }
 
   login() {
-   this.authService.loginRedirect();
+    if  (this.msalGuardConfig.authRequest){
+      this.authService.loginRedirect({...this.msalGuardConfig.authRequest} as RedirectRequest);
+    }
+    else {
+      this.authService.loginRedirect();
+    }
   }
 
   setLoginDisplay() {

@@ -9,8 +9,8 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatListModule } from "@angular/material/list";
 
 
-import { MsalModule, MsalRedirectComponent } from "@azure/msal-angular";
-import { PublicClientApplication } from "@azure/msal-browser";
+import { MsalGuard, MsalModule, MsalRedirectComponent } from "@azure/msal-angular";
+import { InteractionType, PublicClientApplication } from "@azure/msal-browser";
 import { AppRoutingModule } from "./app-routing.module";
 import { environment } from '../environments/environment';
 
@@ -40,11 +40,19 @@ window.navigator.userAgent.indexOf("Trident") > -1;
             storeAuthStateInCookie: isIE, // Set to true for Internet Explorer 11
           },
         }),
-        null,
+        {
+            interactionType: InteractionType.Redirect, // MSAL Guard Configuration
+            authRequest: {
+                scopes: ["user.read"]
+            }
+        },
         null
       ),
     ],
-    providers: [],
+    providers: [
+        MsalGuard, // MsalGuard added as provider here
+
+    ],
     bootstrap: [AppComponent, MsalRedirectComponent],
   })
   export class AppModule {}

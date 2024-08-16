@@ -3,11 +3,13 @@ import { ProfileComponent } from "./profile/profile.component";
 import { HomeComponent } from "./home/home.component";
 import { NgModule } from "@angular/core";
 import { BrowserUtils } from "@azure/msal-browser";
+import { MsalGuard } from "@azure/msal-angular";
 
 const routes: Routes = [
     {
         path: "profile",
         component: ProfileComponent,
+        canActivate: [MsalGuard],
     },
     {
         path: "",
